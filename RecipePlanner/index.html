@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="Recipe Planner helps you discover recipes, save favorites, and plan your meals."
+  >
+
+  <title>Recipe Planner | Discover Your Next Meal</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-content">
+
+      <a href="index.html" class="logo">
+        <span class="logo-icon" aria-hidden="true">🍽️</span>
+        <span>Recipe Planner</span>
+      </a>
+
+      <button
+        class="menu-button"
+        id="menu-button"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+
+      <nav class="main-nav" id="main-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="recipes.html">Recipes</a>
+        <a href="favorites.html">Favorites</a>
+        <a href="meal-planner.html">Meal Planner</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container hero-content">
+
+        <div class="hero-text">
+          <p class="eyebrow">DISCOVER • SAVE • PLAN</p>
+
+          <h1>Find something delicious to cook.</h1>
+
+          <p>
+            Search for recipes, discover new meals, save your favorites,
+            and organize your meals with Recipe Planner.
+          </p>
+
+          <form class="search-form" id="search-form">
+            <label for="search-input" class="sr-only">
+              Search for a recipe
+            </label>
+
+            <input
+              type="search"
+              id="search-input"
+              name="search"
+              placeholder="Search for chicken, rice, pasta..."
+              required
+              minlength="2"
+            >
+
+            <button type="submit" class="primary-button">
+              Search
+            </button>
+          </form>
+
+          <p id="search-message" class="message" aria-live="polite"></p>
+        </div>
+
+        <div class="hero-image">
+          <div class="hero-placeholder" aria-label="Food illustration">
+            🍲
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="recipes-section">
+      <div class="container">
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">EXPLORE</p>
+            <h2>Discover Recipes</h2>
+          </div>
+
+          <a href="recipes.html" class="secondary-button">
+            View All Recipes
+          </a>
+        </div>
+
+        <div
+          id="recipe-results"
+          class="recipe-grid"
+          aria-live="polite"
+        >
+          <p class="empty-message">
+            Search for a recipe to see delicious meal ideas.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+
+      <p>
+        &copy; 2026 Recipe Planner. Built for WDD 330.
+      </p>
+
+      <p>
+        Recipe data provided by TheMealDB.
+      </p>
+
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
