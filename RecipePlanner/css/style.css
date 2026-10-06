@@ -637,3 +637,109 @@ h3 {
     padding: 1.25rem;
   }
 }
+
+.page-header {
+  padding: 3rem 0 2rem;
+  text-align: center;
+}
+
+.page-header h1 {
+  margin-bottom: 0.75rem;
+}
+
+.page-header p:last-child {
+  max-width: 650px;
+  margin: 0 auto;
+  color: var(--muted-text);
+}
+
+.meal-planner-section {
+  padding: 1rem 0 4rem;
+}
+
+.meal-plan-day {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.meal-plan-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.meal-plan-day-header h2 {
+  margin: 0;
+}
+
+.meal-plan-day-header span {
+  color: var(--muted-text);
+}
+
+.meal-plan-recipes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.meal-plan-card {
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--background-color);
+}
+
+.meal-plan-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.meal-plan-card-content {
+  padding: 1rem;
+}
+
+.meal-plan-card-content h3 {
+  margin-bottom: 0.5rem;
+}
+
+.meal-plan-card-content p {
+  color: var(--muted-text);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 650px) {
+  .meal-plan-day-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+.category-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.category-button {
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--card-color);
+  color: var(--text-color);
+  cursor: pointer;
+  font: inherit;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.category-button:hover,
+.category-button:focus {
+  transform: translateY(-2px);
+  background: var(--background-color);
+}

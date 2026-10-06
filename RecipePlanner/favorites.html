@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="description"
+    content="View and manage your favorite recipes."
+  >
+
+  <title>Favorites | Recipe Planner</title>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container header-content">
+
+      <a href="index.html" class="logo">
+        <span class="logo-icon" aria-hidden="true">🍽️</span>
+        <span>Recipe Planner</span>
+      </a>
+
+      <button
+        class="menu-button"
+        id="menu-button"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+
+      <nav class="main-nav" id="main-nav">
+        <a href="index.html">Home</a>
+        <a href="recipes.html">Recipes</a>
+        <a href="favorites.html">Favorites</a>
+        <a href="meal-planner.html">Meal Planner</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main>
+
+    <section class="page-header">
+      <div class="container">
+        <p class="eyebrow">YOUR RECIPES</p>
+        <h1>Favorite Recipes</h1>
+        <p>
+          Your saved recipes are stored in your browser
+          so you can easily find them again.
+        </p>
+      </div>
+    </section>
+
+    <section class="recipes-section">
+      <div class="container">
+
+        <div
+          id="favorite-results"
+          class="recipe-grid"
+          aria-live="polite"
+        >
+          <p class="empty-message">
+            Loading favorites...
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 Recipe Planner. Built for WDD 330.</p>
+      <p>Recipe data provided by TheMealDB.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/favorites.js"></script>
+
+</body>
+
+</html>

@@ -1,10 +1,9 @@
-import { getMealById } from "./api.js";
-import { setupNavigation } from "./navigation.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-  setupNavigation();
-  loadRecipeDetails();
-});
+import {
+  addFavorite,
+  removeFavorite,
+  isFavorite,
+  addToMealPlan,
+} from "./storage.js";
 
 async function loadRecipeDetails() {
   const detailsContainer = document.querySelector("#recipe-details");
@@ -158,4 +157,76 @@ function formatInstructions(instructions) {
     .filter((step) => step.trim() !== "")
     .map((step) => `<p>${step.trim()}</p>`)
     .join("");
+}
+
+function setupFavoriteButton(meal) {
+  const favoriteButton = document.querySelector("#favorite-button");
+
+  if (!favoriteButton) {
+    return;
+  }
+
+  function updateButton() {
+    if (isFavorite(meal.idMeal)) {
+      favoriteButton.textContent = "♥ Remove from Favorites";
+      favoriteButton.setAttribute("aria-pressed", "true");
+    } else {
+      favoriteButton.textContent = "♡ Add to Favorites";
+      favoriteButton.setAttribute("aria-pressed", "false");
+    }
+  }
+    setupMealPlanButton(meal);
+
+  updateButton();
+
+  favoriteButton.addEventListener("click", () => {
+    if (isFavorite(meal.idMeal)) {
+      removeFavorite(meal.idMeal);
+    } else {
+      addFavorite(meal);
+    }
+
+    updateButton();
+  });
+}
+
+function setupMealPlanButton(meal) {
+  const mealPlanButton = document.querySelector("#meal-plan-button");
+
+  if (!mealPlanButton) {
+    return;
+  }
+
+  mealPlanButton.addEventListener("click", () => {
+    const day = prompt(
+      "Which day would you like to add this recipe to?\n\n" +
+      "Enter: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday"
+    );
+
+    if (!day) {
+      return;
+    }
+
+    const formattedDay =
+      day.charAt(0).toUpperCase() + day.slice(1).toLowerCase();
+
+    const validDays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    if (!validDays.includes(formattedDay)) {
+      alert("Please enter a valid day of the week.");
+      return;
+    }
+
+    addToMealPlan(formattedDay, meal);
+
+    alert(`${meal.strMeal} was added to your ${formattedDay} meal plan.`);
+  });
 }

@@ -37,3 +37,41 @@ export async function getMealById(mealId) {
 
   return data.meals ? data.meals[0] : null;
 }
+
+/**
+ * Get all available recipe categories.
+ * @returns {Promise<Array>} Recipe categories.
+ */
+export async function getCategories() {
+  const url = `${BASE_URL}/list.php?c=list`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Unable to retrieve recipe categories.");
+  }
+
+  const data = await response.json();
+
+  return data.meals || [];
+}
+
+/**
+ * Get recipes from a specific category.
+ * @param {string} category - Recipe category.
+ * @returns {Promise<Array>} Recipes in the category.
+ */
+export async function getMealsByCategory(category) {
+  const url =
+    `${BASE_URL}/filter.php?c=${encodeURIComponent(category)}`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Unable to retrieve recipes for this category.");
+  }
+
+  const data = await response.json();
+
+  return data.meals || [];
+}

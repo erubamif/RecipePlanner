@@ -1,4 +1,16 @@
-import { searchMeals } from "./api.js";
+import {
+  searchMeals,
+  getCategories,
+  getMealsByCategory,
+} from "./api.js";
+
+import { setupNavigation } from "./navigation.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupNavigation();
+
+  setupCategoryPage();
+});
 
 export async function searchAndDisplayRecipes(query) {
   const resultsContainer = document.querySelector("#recipe-results");
@@ -22,28 +34,111 @@ export async function searchAndDisplayRecipes(query) {
     if (meals.length === 0) {
       resultsContainer.innerHTML = `
         <p class="empty-message">
-          No recipes were found for "${query}". Try another search.
+          No recipes were found for "${query}".
+          Try another search.
         </p>
       `;
       return;
     }
 
-    displayRecipes(meals);
+    displayRecipes(meals, resultsContainer);
   } catch (error) {
     console.error("Recipe search error:", error);
 
     resultsContainer.innerHTML = `
       <p class="empty-message">
-        Sorry, we could not load the recipes. Please try again.
+        Sorry, we could not load the recipes.
+        Please try again.
       </p>
     `;
   }
 }
 
-function displayRecipes(meals) {
-  const resultsContainer = document.querySelector("#recipe-results");
+async function setupCategoryPage() {
+  const categoryContainer =
+    document.querySelector("#category-buttons");
 
-  resultsContainer.innerHTML = meals
+  const resultsContainer =
+    document.querySelector("#category-results");
+
+  if (!categoryContainer || !resultsContainer) {
+    return;
+  }
+
+  try {
+    const categories = await getCategories();
+
+    categoryContainer.innerHTML = categories
+      .map(
+        (category) => `
+          <button
+            type="button"
+            class="category-button"
+            data-category="${category.strCategory}"
+          >
+            ${category.strCategory}
+          </button>
+        `
+      )
+      .join("");
+
+    setupCategoryButtons();
+  } catch (error) {
+    console.error("Category loading error:", error);
+
+    categoryContainer.innerHTML = `
+      <p class="empty-message">
+        Unable to load recipe categories.
+      </p>
+    `;
+  }
+}
+
+function setupCategoryButtons() {
+  const buttons =
+    document.querySelectorAll(".category-button");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const category = button.dataset.category;
+
+      const resultsContainer =
+        document.querySelector("#category-results");
+
+      resultsContainer.innerHTML = `
+        <p class="empty-message">
+          Loading ${category} recipes...
+        </p>
+      `;
+
+      try {
+        const meals = await getMealsByCategory(category);
+
+        if (meals.length === 0) {
+          resultsContainer.innerHTML = `
+            <p class="empty-message">
+              No recipes found in this category.
+            </p>
+          `;
+          return;
+        }
+
+        displayRecipes(meals, resultsContainer);
+      } catch (error) {
+        console.error("Category recipe error:", error);
+
+        resultsContainer.innerHTML = `
+          <p class="empty-message">
+            Unable to load recipes for this category.
+          </p>
+        `;
+      }
+    });
+  });
+}
+
+function displayRecipes(meals, container) {
+  container.innerHTML = meals
     .map((meal) => createRecipeCard(meal))
     .join("");
 }
@@ -51,6 +146,7 @@ function displayRecipes(meals) {
 function createRecipeCard(meal) {
   return `
     <article class="recipe-card">
+
       <img
         class="recipe-card-image"
         src="${meal.strMealThumb}"
@@ -59,14 +155,16 @@ function createRecipeCard(meal) {
       >
 
       <div class="recipe-card-content">
+
         <h3>${meal.strMeal}</h3>
 
         <p>
-          ${meal.strCategory || "Recipe"} 
+          ${meal.strCategory || "Recipe"}
           ${meal.strArea ? `• ${meal.strArea}` : ""}
         </p>
 
         <div class="recipe-card-actions">
+
           <a
             href="recipe-details.html?id=${meal.idMeal}"
             class="primary-button"
@@ -74,15 +172,10 @@ function createRecipeCard(meal) {
             View Recipe
           </a>
 
-          <button
-            type="button"
-            class="secondary-button favorite-button"
-            data-id="${meal.idMeal}"
-          >
-            ♡ Favorite
-          </button>
         </div>
+
       </div>
+
     </article>
   `;
 }
