@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Meal Plan</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<header>
+  <h1>My Meal Plan</h1>
+  <p>Your saved recipes</p>
+
+  <a href="/" class="back-to-recipes">
+    Back to Recipes
+  </a>
+</header>
+
+  <main>
+
+    <section>
+      <h2>Plan Your Meals</h2>
+
+      <label for="meal-date">Choose a date:</label>
+      <input type="date" id="meal-date">
+
+      <button type="button" id="today-date">
+        Today
+      </button>
+
+      <button type="button" id="save-date">
+        Save Date
+      </button>
+    </section>
+
+    <button type="button" id="clear-meal-plan">
+      Clear Meal Plan
+    </button>
+
+    <section id="meal-plan">
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Recipe Planner</p>
+  </footer>
+
+  <script>
+    const mealPlan = JSON.parse(localStorage.getItem("mealPlan")) || [];
+
+    const mealPlanContainer =
+      document.getElementById("meal-plan");
+
+    const mealDateInput =
+      document.getElementById("meal-date");
+
+    const todayDateButton =
+      document.getElementById("today-date");
+
+    const saveDateButton =
+      document.getElementById("save-date");
+
+    const clearMealPlanButton =
+      document.getElementById("clear-meal-plan");
+
+    const savedDate =
+      localStorage.getItem("mealPlanDate");
+
+
+    function formatDate(dateString) {
+      if (!dateString) {
+        return "No date assigned";
+      }
+
+      const date = new Date(dateString + "T00:00:00");
+
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    }
+
+
+    if (savedDate && mealDateInput) {
+      mealDateInput.value = savedDate;
+    }
+
+
+    todayDateButton.addEventListener("click", () => {
+      const today = new Date();
+
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+
+      mealDateInput.value = `${year}-${month}-${day}`;
+    });
+
+
+    saveDateButton.addEventListener("click", () => {
+      const selectedDate = mealDateInput.value;
+
+      if (!selectedDate) {
+        alert("Please select a date.");
+        return;
+      }
+
+      localStorage.setItem(
+        "mealPlanDate",
+        selectedDate
+      );
+
+      alert(
+        `Meal plan date saved: ${formatDate(selectedDate)}`
+      );
+    });
+
+
+    clearMealPlanButton.addEventListener("click", () => {
+      if (mealPlan.length === 0) {
+        alert("Your meal plan is already empty.");
+        return;
+      }
+
+      const confirmClear = confirm(
+        "Are you sure you want to clear your entire meal plan?"
+      );
+
+      if (!confirmClear) {
+        return;
+      }
+
+      localStorage.removeItem("mealPlan");
+
+      window.location.reload();
+    });
+
+
+    if (mealPlan.length === 0) {
+      mealPlanContainer.innerHTML =
+        "<p>You have not added any recipes to your meal plan yet.</p>";
+    } else {
+      mealPlanContainer.innerHTML = mealPlan
+        .map(
+          (recipe) => `
+            <article>
+              <h2>${recipe.title}</h2>
+
+              <p>
+                <strong>Meal Date:</strong>
+                ${formatDate(recipe.date)}
+              </p>
+
+              ${
+                recipe.image
+                  ? `<img src="${recipe.image}" alt="${recipe.title}">`
+                  : ""
+              }
+
+              <button
+                type="button"
+                class="remove-meal-btn"
+                data-id="${recipe.id}"
+              >
+                Remove
+              </button>
+            </article>
+          `
+        )
+        .join("");
+    }
+
+
+    document.addEventListener("click", (event) => {
+      const button =
+        event.target.closest(".remove-meal-btn");
+
+      if (!button) {
+        return;
+      }
+
+      const recipeId =
+        Number(button.dataset.id);
+
+      const updatedPlan = mealPlan.filter(
+        (recipe) =>
+          Number(recipe.id) !== recipeId
+      );
+
+      localStorage.setItem(
+        "mealPlan",
+        JSON.stringify(updatedPlan)
+      );
+
+      window.location.reload();
+    });
+  </script>
+
+</body>
+</html>

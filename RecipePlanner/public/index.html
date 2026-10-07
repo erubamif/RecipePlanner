@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Planner</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Recipe Planner</h1>
+    <p>Discover recipes and plan your meals with ease.</p>
+
+    <nav>
+      <a href="/meal-plan.html" class="meal-plan-link">
+        My Meal Plan
+      </a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>Find a Recipe</h2>
+
+      <form id="search-form">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search for a recipe..."
+          required
+        >
+
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <!-- Random Meal Section -->
+    <section id="random-meal-section">
+      <h2>Feeling Lucky?</h2>
+
+      <p>Discover a random meal idea.</p>
+
+      <button type="button" id="random-meal-btn">
+        Get Random Meal
+      </button>
+
+      <div id="random-meal-result"></div>
+    </section>
+
+    <section>
+      <h2>Recipe Results</h2>
+
+      <div id="recipe-results">
+        <p>Search for a recipe to see results here.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Recipe Planner</p>
+  </footer>
+
+  <script>
+    const searchForm = document.getElementById("search-form");
+    const searchInput = document.getElementById("search-input");
+    const recipeResults = document.getElementById("recipe-results");
+
+    searchForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const query = searchInput.value.trim();
+
+      if (!query) {
+        return;
+      }
+
+      recipeResults.innerHTML = `
+        <div class="loading-message">
+          <p>Searching for delicious recipes...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          `/api/recipes?query=${encodeURIComponent(query)}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Unable to find recipes.");
+        }
+
+        if (!data.results || data.results.length === 0) {
+          recipeResults.innerHTML = "<p>No recipes found.</p>";
+          return;
+        }
+
+        recipeResults.innerHTML = data.results
+          .map(
+            (recipe) => `
+              <article>
+                <h3>${recipe.title}</h3>
+
+                ${
+                  recipe.image
+                    ? `<img src="${recipe.image}" alt="${recipe.title}">`
+                    : ""
+                }
+
+                ${
+                  recipe.summary
+                    ? `<p>${recipe.summary
+                        .replace(/<[^>]*>/g, "")
+                        .substring(0, 150)}...</p>`
+                    : "<p>Delicious recipe available from Spoonacular.</p>"
+                }
+
+                <a
+                  href="${recipe.sourceUrl || "#"}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Recipe
+                </a>
+
+                <button
+                  type="button"
+                  class="add-meal-btn"
+                  data-id="${recipe.id}"
+                  data-title="${recipe.title}"
+                  data-image="${recipe.image || ""}"
+                >
+                  Add to Meal Plan
+                </button>
+              </article>
+            `
+          )
+          .join("");
+
+      } catch (error) {
+        console.error(error);
+        recipeResults.innerHTML = `<p>${error.message}</p>`;
+      }
+    });
+
+
+    // Random Meal API
+    const randomMealButton =
+      document.getElementById("random-meal-btn");
+
+    const randomMealResult =
+      document.getElementById("random-meal-result");
+
+
+    randomMealButton.addEventListener("click", async () => {
+
+      randomMealResult.innerHTML = `
+        <div class="loading-message">
+          <p>Finding a random meal...</p>
+        </div>
+      `;
+
+      try {
+
+        const response = await fetch("/api/random-meal");
+
+        const data = await response.json();
+
+        if (
+          !response.ok ||
+          !data.meals ||
+          data.meals.length === 0
+        ) {
+          throw new Error(
+            data.message || "Unable to find a random meal."
+          );
+        }
+
+        const meal = data.meals[0];
+
+        randomMealResult.innerHTML = `
+          <article class="random-meal-card">
+
+            <h3>${meal.strMeal}</h3>
+
+            ${
+              meal.strMealThumb
+                ? `
+                  <img
+                    src="${meal.strMealThumb}"
+                    alt="${meal.strMeal}"
+                  >
+                `
+                : ""
+            }
+
+            <p>
+              <strong>Category:</strong>
+              ${meal.strCategory || "N/A"}
+            </p>
+
+            <p>
+              <strong>Area:</strong>
+              ${meal.strArea || "N/A"}
+            </p>
+
+            <p>
+              ${
+                meal.strInstructions
+                  ? meal.strInstructions.substring(0, 250) + "..."
+                  : "Recipe instructions available."
+              }
+            </p>
+
+            ${
+              meal.strYoutube
+                ? `
+                  <a
+                    href="${meal.strYoutube}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Watch Recipe Video
+                  </a>
+                `
+                : ""
+            }
+
+          </article>
+        `;
+
+      } catch (error) {
+
+        console.error(error);
+
+        randomMealResult.innerHTML = `
+          <p>${error.message}</p>
+        `;
+      }
+    });
+
+
+    // Meal Plan
+    const mealPlan =
+      JSON.parse(localStorage.getItem("mealPlan")) || [];
+
+
+    document.addEventListener("click", (event) => {
+
+      const button =
+        event.target.closest(".add-meal-btn");
+
+      if (!button) {
+        return;
+      }
+
+      const selectedDate =
+        localStorage.getItem("mealPlanDate");
+
+      if (!selectedDate) {
+        alert(
+          "Please choose a meal plan date first."
+        );
+
+        return;
+      }
+
+      const recipe = {
+        id: button.dataset.id,
+        title: button.dataset.title,
+        image: button.dataset.image,
+        date: selectedDate
+      };
+
+
+      const alreadyAdded =
+        mealPlan.some(
+          (item) => item.id === recipe.id
+        );
+
+
+      if (alreadyAdded) {
+
+        alert(
+          "This recipe is already in your meal plan."
+        );
+
+        return;
+      }
+
+
+      mealPlan.push(recipe);
+
+
+      localStorage.setItem(
+        "mealPlan",
+        JSON.stringify(mealPlan)
+      );
+
+
+      alert(
+        `Recipe added to your meal plan for ${selectedDate}!`
+      );
+    });
+
+  </script>
+
+</body>
+</html>
