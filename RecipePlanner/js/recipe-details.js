@@ -5,6 +5,7 @@ import {
   addToMealPlan,
 } from "./storage.js";
 
+import { getMealById } from "./api.js";
 async function loadRecipeDetails() {
   const detailsContainer = document.querySelector("#recipe-details");
 
@@ -230,3 +231,5 @@ function setupMealPlanButton(meal) {
     alert(`${meal.strMeal} was added to your ${formattedDay} meal plan.`);
   });
 }
+
+loadRecipeDetails();
